@@ -1,4 +1,3 @@
-import type { Device, Log } from "@/lib/supabase/types";
 import crypto from "crypto";
 
 import { networkInterfaces } from "os";
@@ -72,26 +71,6 @@ export function formatDate(dateString: string | null): string {
 	return diffMs < 0 ? `in ${timeText}` : `${timeText} ago`;
 }
 
-// Determine device status based on next expected update time
-export function getDeviceStatus(device: Device): "online" | "offline" {
-	if (!device.next_expected_update) return "offline";
-
-	const nextExpectedUpdate = new Date(device.next_expected_update);
-	const now = new Date();
-
-	// Device is offline if current time is past the next expected update time
-	return now < nextExpectedUpdate ? "online" : "offline";
-}
-
-// Parse log data to determine log type
-export function getLogType(log: Log): "error" | "warning" | "info" {
-	const logData = log.log_data.toLowerCase();
-
-	if (logData.includes("error") || logData.includes("fail")) return "error";
-	if (logData.includes("warn")) return "warning";
-
-	return "info";
-}
 
 // Custom debounce function implementation
 export function debounce<T extends (...args: unknown[]) => unknown>(
