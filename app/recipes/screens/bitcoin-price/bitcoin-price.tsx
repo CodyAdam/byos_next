@@ -48,11 +48,11 @@ export default function BitcoinPrice({
 									<div className="w-[120px] h-[120px]">
 										<picture>
 											<source
-												srcSet="https://cryptologos.cc/logos/bitcoin-btc-logo.png"
+												srcSet="https://logo-marque.com/wp-content/uploads/2020/08/Bitcoin-Logo.png"
 												type="image/png"
 											/>
 											<img
-												src="https://cryptologos.cc/logos/bitcoin-btc-logo.png"
+												src="https://logo-marque.com/wp-content/uploads/2020/08/Bitcoin-Logo.png"
 												alt="Bitcoin Logo"
 												width={120}
 												height={120}
@@ -61,7 +61,7 @@ export default function BitcoinPrice({
 													width: "120px",
 													height: "120px",
 													filter:
-														"grayscale(100%) brightness(50%) contrast(200%)",
+														"grayscale(100%) brightness(100%) contrast(100%)",
 												}}
 											/>
 										</picture>

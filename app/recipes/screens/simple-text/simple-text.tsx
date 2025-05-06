@@ -11,11 +11,11 @@ export default function SimpleText() {
 						// required as parent cannot access children props, so we need to pass the transform function to the children
 						// make a pixle checkerboard of white and black for debug purposes
 						<div className="w-[800px] h-[480px] bg-white flex flex-col items-center justify-center">
-							<div className="text-4xl font-blockkie">
+							<div className="text-4xl font-blockkie pt-5">
 								Hello World - blockkie font
 							</div>
-							<div className="text-base font-geneva9">
-								small text with geneva9 font
+							<div className="text-base font-geneva9 mt-5">
+								s
 							</div>
 							<BitmapText
 								text={`FT font: Great for headlines`}

@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Columns2, Rows2, ZoomIn, ZoomOut } from "lucide-react";
 import {
 	SlideToggle,
 	type SlideToggleOption,
 } from "@/components/ui/slide-toggle";
+import { cn } from "@/lib/utils";
+import { Columns2, Rows2, ZoomIn, ZoomOut } from "lucide-react";
+import * as React from "react";
 
 type RecipePreviewLayoutProps = {
 	children?: React.ReactNode;
@@ -254,6 +254,7 @@ const RecipePreviewLayout = ({
 
 	// Determine which render type options to show based on available components
 	const getRenderTypeOptions = () => {
+		
 		const options: SlideToggleOption<"bmp" | "png" | "svg">[] = [];
 
 		if (bmpComponent) {
@@ -285,6 +286,8 @@ const RecipePreviewLayout = ({
 
 		return options;
 	};
+
+	
 
 	return (
 		<div className="flex flex-col gap-4 items-start">

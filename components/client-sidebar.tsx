@@ -1,28 +1,22 @@
 "use client";
 
-import { useState, useEffect, memo, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import {
-	ChevronDown,
-	ChevronRight,
-	Monitor,
-	Server,
-	Wrench,
-	Palette,
-	PencilRuler,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { StatusIndicator } from "@/components/ui/status-indicator";
-import type { Device } from "@/lib/supabase/types";
-import { getDeviceStatus } from "@/utils/helpers";
-import Link from "next/link";
-import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+	ChevronDown,
+	ChevronRight,
+	Palette,
+	PencilRuler,
+	Server
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { memo, Suspense, useCallback, useEffect, useState } from "react";
 
 // Define interfaces for screens and tools JSON
 interface Author {
@@ -60,20 +54,6 @@ interface ToolConfig {
 
 // Config type for components that can be either recipe or tool
 export type ComponentConfig = RecipeConfig | ToolConfig;
-
-// Loading fallbacks
-const DeviceListFallback = () => (
-	<div className="pl-6 space-y-2">
-		{[1, 2, 3, 4].map((i) => (
-			<div key={i} className="flex items-center w-full py-1">
-				<div className="w-full flex items-center">
-					<Skeleton className="h-5 w-[85%] rounded-md" />
-					<Skeleton className="h-3 w-3 ml-2 rounded-full" />
-				</div>
-			</div>
-		))}
-	</div>
-);
 
 const RecipesListFallback = () => (
 	<div className="pl-6 space-y-2">
@@ -127,61 +107,6 @@ const NavLink = memo(
 
 NavLink.displayName = "NavLink";
 
-// Single device item component
-const DeviceItem = memo(
-	({
-		device,
-		currentPath,
-	}: {
-		device: Device;
-		currentPath: string;
-	}) => {
-		const [status, setStatus] = useState(getDeviceStatus(device));
-		const isActive = currentPath === `/device/${device.friendly_id}`;
-		const router = useRouter();
-
-		// Update status periodically
-		useEffect(() => {
-			setStatus(getDeviceStatus(device));
-
-			const interval = setInterval(() => {
-				setStatus(getDeviceStatus(device));
-			}, 30000);
-
-			return () => clearInterval(interval);
-		}, [device]);
-
-		// Prefetch on hover
-		const handleMouseEnter = useCallback(() => {
-			router.prefetch(`/device/${device.friendly_id}`);
-		}, [router, device.friendly_id]);
-
-		return (
-			<Button
-				key={device.id}
-				variant="ghost"
-				size="sm"
-				className={`w-full justify-start space-x-0 text-sm h-8 ${isActive ? "bg-muted" : ""}`}
-				asChild
-				onMouseEnter={handleMouseEnter}
-			>
-				<Link href={`/device/${device.friendly_id}`}>
-					<div className="flex items-center w-full">
-						<span className="truncate text-xs">{device.name}</span>
-						<StatusIndicator
-							status={status as "online" | "offline"}
-							size="sm"
-							className="ml-1"
-						/>
-					</div>
-				</Link>
-			</Button>
-		);
-	},
-);
-
-DeviceItem.displayName = "DeviceItem";
-
 // Recipe item component
 const RecipeItem = memo(
 	({
@@ -219,35 +144,6 @@ const RecipeItem = memo(
 );
 
 RecipeItem.displayName = "RecipeItem";
-
-// Device list component
-const DeviceList = memo(
-	({
-		devices,
-		currentPath,
-	}: {
-		devices: Device[];
-		currentPath: string;
-	}) => {
-		return (
-			<>
-				{Array.isArray(devices) && devices.length > 0 ? (
-					devices.map((device) => (
-						<DeviceItem
-							key={device.id}
-							device={device}
-							currentPath={currentPath}
-						/>
-					))
-				) : (
-					<div className="pl-6 space-y-2">No devices found</div>
-				)}
-			</>
-		);
-	},
-);
-
-DeviceList.displayName = "DeviceList";
 
 // Recipes list component
 const RecipesList = memo(
@@ -287,56 +183,6 @@ const RecipesList = memo(
 );
 
 RecipesList.displayName = "RecipesList";
-
-// Devices section component
-const DevicesSection = memo(
-	({
-		devices,
-		currentPath,
-		initialOpen = false,
-	}: {
-		devices: Device[];
-		currentPath: string;
-		initialOpen?: boolean;
-	}) => {
-		const [isOpen, setIsOpen] = useState(initialOpen);
-
-		// Open devices section if a device page is active
-		useEffect(() => {
-			if (currentPath.startsWith("/device/")) {
-				setIsOpen(true);
-			}
-		}, [currentPath]);
-
-		return (
-			<Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-				<CollapsibleTrigger asChild>
-					<Button
-						variant="ghost"
-						className="w-full justify-between text-sm h-9"
-					>
-						<div className="flex items-center">
-							<Monitor className="mr-2 size-4" />
-							Devices
-						</div>
-						{isOpen ? (
-							<ChevronDown className="size-4" />
-						) : (
-							<ChevronRight className="size-4" />
-						)}
-					</Button>
-				</CollapsibleTrigger>
-				<CollapsibleContent className="pl-6 space-y-1">
-					<Suspense fallback={<DeviceListFallback />}>
-						<DeviceList devices={devices} currentPath={currentPath} />
-					</Suspense>
-				</CollapsibleContent>
-			</Collapsible>
-		);
-	},
-);
-
-DevicesSection.displayName = "DevicesSection";
 
 // Recipes section component
 const RecipesSection = memo(
@@ -464,14 +310,13 @@ ToolsSection.displayName = "ToolsSection";
 
 // Main ClientSidebar component
 interface ClientSidebarProps {
-	devices: Device[];
 	recipesComponents: [string, ComponentConfig][];
 	toolsComponents: [string, ComponentConfig][];
 	currentPath: string;
 }
 
 export function ClientSidebar({
-	devices,
+	
 	recipesComponents,
 	toolsComponents,
 	currentPath,
@@ -483,12 +328,6 @@ export function ClientSidebar({
 				currentPath={currentPath}
 				icon={<Server className="mr-2 size-4" />}
 				label="Overview"
-			/>
-
-			<DevicesSection
-				devices={devices}
-				currentPath={currentPath}
-				initialOpen={true}
 			/>
 
 			<RecipesSection
@@ -503,19 +342,6 @@ export function ClientSidebar({
 				initialOpen={currentPath.startsWith("/tools/")}
 			/>
 
-			<NavLink
-				href="/system-logs"
-				currentPath={currentPath}
-				icon={<Server className="mr-2 size-4" />}
-				label="System Log"
-			/>
-
-			<NavLink
-				href="/maintenance"
-				currentPath={currentPath}
-				icon={<Wrench className="mr-2 size-4" />}
-				label="Maintenance"
-			/>
 		</nav>
 	);
 }
